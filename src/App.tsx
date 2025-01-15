@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import clipboardy from 'clipboardy'
 
 type Coord = {
@@ -15,7 +15,7 @@ export default function App() {
 
   const regex = /-?\d+\.\d+,-?\d+\.\d+/g;
 
-  function coordsInputChanged(val: string) {
+  function loadCoords(val: string) {
     setCoordsInput(val)
     const matches = val.match(regex);
     setReady(matches ? (!ready ? true: true) : false)
@@ -87,19 +87,38 @@ export default function App() {
   
     setCoords(final);
   }
+  async function next() {
+    if (coords.length === 0) {
+      console.warn("No coordinates available to navigate.");
+      return;
+    }
   
+    try {
   
+        const nextIndex = (current + 1) % coords.length;
+        const toCopy = coords[nextIndex].coord;
+  
+        await clipboardy.write(toCopy);
+        console.log("Copied to clipboard:", toCopy);
+  
+        setCurrent(nextIndex);
 
-  function next() {
-    const temp = current;
-    const isLast = temp >= coords.length - 1
-    if(isLast) setCurrent(0)
-    else setCurrent(prev => prev + 1)
-    clipboardy.write(coords[isLast ? 0: temp + 1].coord);
+    } catch (err) {
+      console.error("Clipboard write failed:", err);
+    }
   }
 
+  useEffect(() => {
+    window.onfocus = () => {
+      next()
+      return () => {
+        window.onfocus = null
+      }
+    }
+  }, [coords, current])
+
   return <div className='main-wrapper'>
-    <input type="text" value={coordsInput} onChange={e => coordsInputChanged(e.target.value)}/>
+    <input type="text" value={coordsInput} onChange={e => loadCoords(e.target.value)}/>
     <span className={`ready${ready ? ' active' : ''}`}>{ready ? 'Coords are ready, now: ' : 'No coords found, wrong input'}{coords.length ? <span className='coord'>#{current + 1} {coords[current].coord}{current === coords.length - 1 ? '': ' Next ' + (coords[current].distanceNext || 0).toFixed(2) + 'km'}</span>: null}</span>
     <button className='next-btn' onClick={next}>Next</button>
   </div>
