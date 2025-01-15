@@ -4,6 +4,7 @@
 }
 
 .main-wrapper {
+	position: relative;
 	width: 100svw;
 	height: 100svh;
 	background: #9d9a9a;
@@ -35,8 +36,12 @@
 	}
 
 	.next-btn {
-		width: 6.5rem;
-		height: 2rem;
+		width: 16.5rem;
+		height: 15rem;
 		cursor: pointer;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
 	}
 }
