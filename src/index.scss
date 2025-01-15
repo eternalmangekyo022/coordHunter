@@ -32,12 +32,16 @@
 		font-weight: 700;
 		font-size: 1.1rem;
 		color: black;
-		margin-left: 2rem;
+		margin-left: 1rem;
+	}
+
+	select {
+		margin-top: 1rem;
 	}
 
 	.next-btn {
 		width: 16.5rem;
-		height: 15rem;
+		height: 25rem;
 		cursor: pointer;
 		position: absolute;
 		top: 50%;
