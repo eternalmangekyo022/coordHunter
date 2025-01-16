@@ -128,6 +128,6 @@ export default function App() {
       <option value="taipei">Taipei</option>
     </select>
     <span className={`ready${ready ? ' active' : ''}`}>{ready ? 'Coords are ready, now: ' : 'No coords found, wrong input'}{coords.length ? <span className='coord'>#{current + 1} {coords[current].coord}{current === coords.length - 1 ? '': ' Next ' + (coords[current].distanceNext || 0).toFixed(2) + 'km'}</span>: null}</span>
-    <a className='next-btn' target='_blank' href={coords.length > 0 ? `pokemongo://spprotele=${coords[current].coord}`: ''} onClick={next}>Next</a>
+    <a className='next-btn' target='_blank' href={coords.length > 0 ? `pokemongo://spprotele=${'32.3424,4.432424'}`: ''} onClick={next}>Next</a>
   </div>
 }
