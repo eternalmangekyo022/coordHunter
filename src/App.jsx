@@ -1,20 +1,16 @@
 import { useState } from 'react'
 import laPreset from './presets/la.json'
+import Button from './components/Button.jsx'
 import taipeiPreset from './presets/taipei.json'
-
-type Coord = {
-  coord: string;
-  distanceNext: number; // Null for the last coordinate, as there's no "next"
-};
 
 export default function App() {
   const [coordsInput, setCoordsInput] = useState('');
   const [ready, setReady] = useState(false);
-  const [coords, setCoords] = useState<Coord[]>([]);
+  const [coords, setCoords] = useState([]);
   const [current, setCurrent] = useState(0);
   const regex = /-?\d+\.\d+,-?\d+\.\d+/g;
 
-  function loadCoords(val: string) {
+  function loadCoords(val) {
     setCoordsInput(val)
     const matches = val.match(regex);
     setReady(matches ? (!ready ? true: true) : false)
@@ -23,17 +19,17 @@ export default function App() {
       setCoords([])
       return
     }
-    sortByTsp(matches as string[]);
+    sortByTsp(matches);
   }
 
-  const selectionChanged = (e: 'la' | 'taipei' | '') => {
+  const selectionChanged = (e) => {
     if(e === '') return
     loadCoords(e === 'la' ? laPreset.join(';') : taipeiPreset.join(';'))
   }
 
-  function d(coord1: string, coord2: string): number {
+  function d(coord1, coord2) {
     const R = 6371; // Earth's radius in kilometers
-    const toRadians = (degrees: number): number => degrees * (Math.PI / 180);
+    const toRadians = (degrees) => degrees * (Math.PI / 180);
   
     const [lat1, lon1] = coord1.split(',').map(Number);
     const [lat2, lon2] = coord2.split(',').map(Number);
@@ -54,21 +50,16 @@ export default function App() {
 
 
   
-  function sortByTsp(coords: string[]) {
+  function sortByTsp(coords) {
     if (coords.length < 2) {
       setCoords(coords.map(coord => ({ coord, distanceNext: coords.length === 1 ? 0 : d(coords[0], coords[1]) }))); // Single or empty input
       return;
     }
 
-    type CoordList = {
-      coords: Coord[],
-      distance: number
-    }
-
-    const variations: CoordList[] = [];
+    const variations = [];
     for(let i = 0; i < coords.length; i++) {
       let remaining = [...coords];
-      const final: Coord[] = [];
+      const final = [];
     
       // Start with the first coordinate
       let current = coords[i];
@@ -122,12 +113,14 @@ export default function App() {
 
   return <div className='main-wrapper'>
     <input type="text" value={coordsInput} onChange={e => loadCoords(e.target.value)}/>
-    <select onChange={e => selectionChanged(e.target.value as ('' | 'la' | 'taipei'))} name="presets" >
+    <select onChange={e => selectionChanged(e.target.value)} name="presets" >
       <option value="">Select a preset</option>
       <option value="la">Los Angeles</option>
       <option value="taipei">Taipei</option>
     </select>
+    { /**pokemongo://spprotele=51.934,7.71475 */}
+    <a target="_blank" href="pokemongo://spprotele=51.934,7.71475">SpooferPro</a>
     <span className={`ready${ready ? ' active' : ''}`}>{ready ? 'Coords are ready, now: ' : 'No coords found, wrong input'}{coords.length ? <span className='coord'>#{current + 1} {coords[current].coord}{current === coords.length - 1 ? '': ' Next ' + (coords[current].distanceNext || 0).toFixed(2) + 'km'}</span>: null}</span>
-    <a className='next-btn' target='_blank' href={coords.length > 0 ? `pokemongo://spprotele=${'32.3424,4.432424'}`: ''} onClick={next}>Next</a>
+    <Button href={coords.length > 0 ? `pokemongo://spprotele=${'32.3424,4.432424'}`: ''} onClick={next}></Button>
   </div>
 }
