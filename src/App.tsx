@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import clipboardy from 'clipboardy'
 import laPreset from './presets/la.json'
 import taipeiPreset from './presets/taipei.json'
 
@@ -99,21 +98,24 @@ export default function App() {
     console.log(shortest);
   
     // Add the last coordinate with no "next" distance
-    clipboardy.write(shortest[0].coord);
+    const a = document.createElement('a')
+    a.href = `pokemongo://spprotele=${shortest[0].coord}`
+    a.style.visibility = 'hidden'
+    document.querySelector('body')?.appendChild(a)
+    a.click()
+    document.querySelector('body')?.removeChild(a)
+
     setCoords(shortest);
   }
 
   async function next() {
     if (coords.length === 0) {
       console.warn("No coordinates available to navigate.");
-      return;
+      return '';
     }
   
     try {
-        const nextIndex = (current + 1) % coords.length;
-        const toCopy = coords[nextIndex].coord;
-  
-        await clipboardy.write(toCopy);
+        const nextIndex = (current + 1) % coords.length;  
         setCurrent(nextIndex);
 
     } catch (err) {
@@ -129,6 +131,6 @@ export default function App() {
       <option value="taipei">Taipei</option>
     </select>
     <span className={`ready${ready ? ' active' : ''}`}>{ready ? 'Coords are ready, now: ' : 'No coords found, wrong input'}{coords.length ? <span className='coord'>#{current + 1} {coords[current].coord}{current === coords.length - 1 ? '': ' Next ' + (coords[current].distanceNext || 0).toFixed(2) + 'km'}</span>: null}</span>
-    <button className='next-btn' onClick={next}>Next</button>
+    <a className='next-btn' target='_blank' href={coords.length > 0 ? `pokemongo://spprotele=${coords[current]}`: ''} onClick={next}>Next</a>
   </div>
 }
