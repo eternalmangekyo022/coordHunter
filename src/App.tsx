@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import clipboardy from 'clipboardy'
 import laPreset from './presets/la.json'
 import taipeiPreset from './presets/taipei.json'
@@ -99,7 +99,7 @@ export default function App() {
     console.log(shortest);
   
     // Add the last coordinate with no "next" distance
-  
+    clipboardy.write(shortest[0].coord);
     setCoords(shortest);
   }
 
@@ -120,15 +120,6 @@ export default function App() {
       console.error("Clipboard write failed:", err);
     }
   }
-
-  useEffect(() => {
-    window.onfocus = () => {
-      next()
-      return () => {
-        window.onfocus = null
-      }
-    }
-  }, [coords, current])
 
   return <div className='main-wrapper'>
     <input type="text" value={coordsInput} onChange={e => loadCoords(e.target.value)}/>
