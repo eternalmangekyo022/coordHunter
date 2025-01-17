@@ -47,5 +47,12 @@
 		top: 60%;
 		left: 50%;
 		transform: translate(-50%, -50%);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background: #222;
+		border-radius: 2rem;
+		color: white;
+		text-decoration: none;
 	}
 }
