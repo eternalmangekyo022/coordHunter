@@ -2,13 +2,14 @@ import { useState } from 'react'
 import clipboardy from 'clipboardy'
 import laPreset from './presets/la.json'
 import taipeiPreset from './presets/taipei.json'
+import axios from 'axios'
 
 type Coord = {
   coord: string;
   distanceNext: number; // Null for the last coordinate, as there's no "next"
 };
 
-type ISelection = 'la' | 'taipei' | '' | 'cb' | 'last';
+type ISelection = 'la' | 'taipei' | '' | 'cb' | 'last' | 'nycrocket';
 
 export default function App() {
   const [coordsInput, setCoordsInput] = useState('');
@@ -46,7 +47,15 @@ export default function App() {
     } 
     else if(e === 'cb') pasteFromCb()
     else if(e === 'last') loadLastSession()
+    else if(e === 'nycrocket') loadRocket()
     else loadCoords(e === 'la' ? laPreset.join(';') : taipeiPreset.join(';'))
+  }
+
+  async function loadRocket() {
+    const raw = await axios.get<{ lat: number, lon: number }[]>('https://nyc-backend.vercel.app/rockets/12', { headers: { 'Content-Type': 'application/json' } });
+    const filtered = raw.data.map(({ lat, lon }) => `${lat},${lon}`).join(';')
+    loadCoords(filtered)
+
   }
 
   function d(coord1: string, coord2: string): number {
@@ -157,6 +166,7 @@ export default function App() {
     <input type="text" value={coordsInput} onChange={e => loadCoords(e.target.value)}/>
     <select onChange={e => selectionChanged(e.target.value as ISelection)} name="presets" >
       <option value="">{selectedMode !== '' ? 'Clear': 'Select A Preset'}</option>
+      <option value="nycrocket">Rockets NYC</option>
       <option value="la">Los Angeles</option>
       <option value="taipei">Taipei</option>
       <option value="last">Load From Last Session</option>
