@@ -148,7 +148,7 @@ export default function App() {
   return <div className='main-wrapper'>
     <input type="text" value={coordsInput} onChange={e => loadCoords(e.target.value)}/>
     <select onChange={e => selectionChanged(e.target.value as ISelection)} name="presets" >
-      <option value="">Select a preset</option>
+      <option value="">{selectedMode !== '' ? 'Clear': 'Select A Preset'}t</option>
       <option value="la">Los Angeles</option>
       <option value="taipei">Taipei</option>
       <option value="cb">Content From Clipboard</option>
