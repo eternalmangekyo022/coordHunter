@@ -27,9 +27,10 @@ export default function App() {
     sortByTsp(matches as string[]);
   }
 
-  const selectionChanged = (e: 'la' | 'taipei' | '') => {
+  const selectionChanged = async (e: 'la' | 'taipei' | '' | 'cb') => {
     if(e === '') return
-    loadCoords(e === 'la' ? laPreset.join(';') : taipeiPreset.join(';'))
+    else if(e === 'cb') loadCoords(await pasteFromCb())
+    else loadCoords(e === 'la' ? laPreset.join(';') : taipeiPreset.join(';'))
   }
 
   function d(coord1: string, coord2: string): number {
@@ -52,8 +53,6 @@ export default function App() {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c; // Distance in kilometers
   }
-
-
   
   async function sortByTsp(coords: string[]) {
     if (coords.length < 2) {
@@ -122,12 +121,19 @@ export default function App() {
     }
   }
 
+  async function pasteFromCb() {
+    const copied = await clipboardy.read()
+    setCoordsInput(copied)
+    return copied
+  }
+
   return <div className='main-wrapper'>
     <input type="text" value={coordsInput} onChange={e => loadCoords(e.target.value)}/>
-    <select onChange={e => selectionChanged(e.target.value as ('' | 'la' | 'taipei'))} name="presets" >
+    <select onChange={e => selectionChanged(e.target.value as ('' | 'la' | 'taipei' | 'cb'))} name="presets" >
       <option value="">Select a preset</option>
       <option value="la">Los Angeles</option>
       <option value="taipei">Taipei</option>
+      <option value="cb">Content From Clipboard</option>
     </select>
     <span className={`ready${ready ? ' active' : ''}`}>{ready ? 'Coords are ready, now: ' : 'No coords found, wrong input'}{coords.length ? <span className='coord'>#{current + 1} {coords[current].coord}{current === coords.length - 1 ? '': ' Next ' + (coords[current].distanceNext || 0).toFixed(2) + 'km'}</span>: null}</span>
     <button className='next-btn' onClick={next}>Next</button>
