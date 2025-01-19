@@ -52,8 +52,8 @@ export default function App() {
   }
 
   async function loadRocket() {
-    const raw = await axios.get<{ lat: number, lon: number }[]>('https://nyc-backend.vercel.app/rockets/12', { headers: { 'Content-Type': 'application/json' } });
-    const filtered = raw.data.map(({ lat, lon }) => `${lat},${lon}`).join(';')
+    const raw = await axios.get<{ lat: number, lng: number }[]>('https://nyc-backend.vercel.app/rockets/12', { headers: { 'Content-Type': 'application/json' } });
+    const filtered = raw.data.map(({ lat, lng }) => `${lat},${lng}`).join(';')
     loadCoords(filtered)
 
   }
