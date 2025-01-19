@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import clipboardy from 'clipboardy'
 import laPreset from './presets/la.json'
 import taipeiPreset from './presets/taipei.json'
@@ -8,7 +8,7 @@ type Coord = {
   distanceNext: number; // Null for the last coordinate, as there's no "next"
 };
 
-type ISelection = 'la' | 'taipei' | '' | 'cb';
+type ISelection = 'la' | 'taipei' | '' | 'cb' | 'last';
 
 export default function App() {
   const [coordsInput, setCoordsInput] = useState('');
@@ -38,8 +38,15 @@ export default function App() {
 
   const selectionChanged = async (e: ISelection) => {
     setSelectedMode(e)
-    if(e === '') return
-    loadCoords(e === 'la' ? laPreset.join(';') : taipeiPreset.join(';'))
+    if(e === '') {
+      setCoordsInput('')
+      setCurrent(0)
+      setReady(false)
+      setCoords([])
+    } 
+    else if(e === 'cb') pasteFromCb()
+    else if(e === 'last') loadLastSession()
+    else loadCoords(e === 'la' ? laPreset.join(';') : taipeiPreset.join(';'))
   }
 
   function d(coord1: string, coord2: string): number {
@@ -133,24 +140,25 @@ export default function App() {
   async function pasteFromCb() {
     const copied = await clipboardy.read()
     setCoordsInput(copied)
+    loadCoords(copied)
     return copied
   }
 
-  useEffect(() => {
+  function loadLastSession() {
     const savedProgress = localStorage.getItem('savedProgress')
     const savedCoords = localStorage.getItem('savedCoords')
 
     if(savedCoords) loadCoords(savedCoords)
     if(savedProgress) setCurrent(parseInt(savedProgress))
-
-  } ,[])
+  }
 
   return <div className='main-wrapper'>
     <input type="text" value={coordsInput} onChange={e => loadCoords(e.target.value)}/>
     <select onChange={e => selectionChanged(e.target.value as ISelection)} name="presets" >
-      <option value="">{selectedMode !== '' ? 'Clear': 'Select A Preset'}t</option>
+      <option value="">{selectedMode !== '' ? 'Clear': 'Select A Preset'}</option>
       <option value="la">Los Angeles</option>
       <option value="taipei">Taipei</option>
+      <option value="last">Load From Last Session</option>
       <option value="cb">Content From Clipboard</option>
     </select>
     <span className={`ready${ready ? ' active' : ''}`}>{ready ? 'Coords are ready, now: ' : 'No coords found, wrong input'}{coords.length ? <span className='coord'>#{current + 1} {coords[current].coord}{current === coords.length - 1 ? '': ' Next ' + (coords[current].distanceNext || 0).toFixed(2) + 'km'}</span>: null}</span>
