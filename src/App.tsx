@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import clipboardy from 'clipboardy'
 import laPreset from './presets/la.json'
 import taipeiPreset from './presets/taipei.json'
@@ -15,11 +15,17 @@ export default function App() {
   const [current, setCurrent] = useState(0);
   const regex = /-?\d+\.\d+,-?\d+\.\d+/g;
 
+  const setCurrentMod = (curr: number) => {
+    setCurrent(curr)
+    localStorage.setItem('savedProgress', curr.toString())
+  }
+
   function loadCoords(val: string) {
     setCoordsInput(val)
+    localStorage.setItem('savedCoords', val)
     const matches = val.match(regex);
     setReady(matches ? (!ready ? true: true) : false)
-    setCurrent(0)
+    setCurrentMod(0)
     if(!matches) {
       setCoords([])
       return
@@ -114,7 +120,7 @@ export default function App() {
         const toCopy = coords[nextIndex].coord;
   
         await clipboardy.write(toCopy);
-        setCurrent(nextIndex);
+        setCurrentMod(nextIndex);
 
     } catch (err) {
       console.error("Clipboard write failed:", err);
@@ -126,6 +132,16 @@ export default function App() {
     setCoordsInput(copied)
     return copied
   }
+
+  useEffect(() => {
+    const savedProgress = localStorage.getItem('savedProgress')
+    const savedCoords = localStorage.getItem('savedCoords')
+
+    if(savedCoords) loadCoords(savedCoords)
+    if(savedProgress) setCurrent(parseInt(savedProgress))
+
+    console.log(localStorage)
+  } ,[])
 
   return <div className='main-wrapper'>
     <input type="text" value={coordsInput} onChange={e => loadCoords(e.target.value)}/>
