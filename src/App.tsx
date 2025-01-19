@@ -141,6 +141,7 @@ export default function App() {
     const copied = await clipboardy.read()
     setCoordsInput(copied)
     loadCoords(copied)
+    setSelectedMode('')
     return copied
   }
 
