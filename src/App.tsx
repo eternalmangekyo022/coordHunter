@@ -55,7 +55,7 @@ export default function App() {
 
 
   
-  function sortByTsp(coords: string[]) {
+  async function sortByTsp(coords: string[]) {
     if (coords.length < 2) {
       setCoords(coords.map(coord => ({ coord, distanceNext: coords.length === 1 ? 0 : d(coords[0], coords[1]) }))); // Single or empty input
       return;
@@ -68,6 +68,7 @@ export default function App() {
 
     const variations: CoordList[] = [];
     for(let i = 0; i < coords.length; i++) {
+      console.log((i + 1) / coords.length * 100)
       let remaining = [...coords];
       const final: Coord[] = [];
     
