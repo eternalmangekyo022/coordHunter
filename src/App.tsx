@@ -8,11 +8,14 @@ type Coord = {
   distanceNext: number; // Null for the last coordinate, as there's no "next"
 };
 
+type ISelection = 'la' | 'taipei' | '' | 'cb';
+
 export default function App() {
   const [coordsInput, setCoordsInput] = useState('');
   const [ready, setReady] = useState(false);
   const [coords, setCoords] = useState<Coord[]>([]);
   const [current, setCurrent] = useState(0);
+  const [selectedMode, setSelectedMode] = useState<ISelection>('');
   const regex = /-?\d+\.\d+,-?\d+\.\d+/g;
 
   const setCurrentMod = (curr: number) => {
@@ -33,10 +36,10 @@ export default function App() {
     sortByTsp(matches as string[]);
   }
 
-  const selectionChanged = async (e: 'la' | 'taipei' | '' | 'cb') => {
+  const selectionChanged = async (e: ISelection) => {
+    setSelectedMode(e)
     if(e === '') return
-    else if(e === 'cb') loadCoords(await pasteFromCb())
-    else loadCoords(e === 'la' ? laPreset.join(';') : taipeiPreset.join(';'))
+    loadCoords(e === 'la' ? laPreset.join(';') : taipeiPreset.join(';'))
   }
 
   function d(coord1: string, coord2: string): number {
@@ -140,18 +143,17 @@ export default function App() {
     if(savedCoords) loadCoords(savedCoords)
     if(savedProgress) setCurrent(parseInt(savedProgress))
 
-    console.log(localStorage)
   } ,[])
 
   return <div className='main-wrapper'>
     <input type="text" value={coordsInput} onChange={e => loadCoords(e.target.value)}/>
-    <select onChange={e => selectionChanged(e.target.value as ('' | 'la' | 'taipei' | 'cb'))} name="presets" >
+    <select onChange={e => selectionChanged(e.target.value as ISelection)} name="presets" >
       <option value="">Select a preset</option>
       <option value="la">Los Angeles</option>
       <option value="taipei">Taipei</option>
       <option value="cb">Content From Clipboard</option>
     </select>
     <span className={`ready${ready ? ' active' : ''}`}>{ready ? 'Coords are ready, now: ' : 'No coords found, wrong input'}{coords.length ? <span className='coord'>#{current + 1} {coords[current].coord}{current === coords.length - 1 ? '': ' Next ' + (coords[current].distanceNext || 0).toFixed(2) + 'km'}</span>: null}</span>
-    <button className='next-btn' onClick={next}>Next</button>
+    <button className='next-btn' onClick={selectedMode === 'cb' ? pasteFromCb: next}>{selectedMode === 'cb' ? 'Paste From Clipboard' : 'Next'}</button>
   </div>
 }
