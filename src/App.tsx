@@ -59,8 +59,8 @@ export default function App() {
   }
 
   async function loadQuest() {
-    const raw = await axios.get<{ lat: number, lng: number }[]>('https://nyc-backend.vercel.app/quests/tyrunt', { headers: { 'Content-Type': 'application/json' } });
-    const filtered = raw.data.map(({ lat, lng }) => `${lat},${lng}`).join(';')
+    const raw = await axios.get<{ quests: { lat: number, lng: number }[] }>('https://nyc-backend.vercel.app/quests/tyrunt', { headers: { 'Content-Type': 'application/json' } });
+    const filtered = raw.data.quests.map(({ lat, lng }) => `${lat},${lng}`).join(';')
     loadCoords(filtered)
   }
 
