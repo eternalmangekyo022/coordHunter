@@ -180,9 +180,11 @@ export default function App() {
       <option value="last">Load From Last Session</option>
       <option value="cb">Content From Clipboard</option>
     </select>
-    <span className={`ready${ready ? ' active' : ''}`}>{!ready && 'No coords found, wrong input'}{coords.length ? <span className='coord'>#{current + 1} 
-      <button onClick={() => clipboardy.write(coords[current].coord)}>Copy</button>
-    {current === coords.length - 1 ? '': ' Next ' + (coords[current].distanceNext || 0).toFixed(2) + 'km'}</span>: null}</span>
+    <span className={`ready${ready ? ' active' : ''}`}>
+      {!ready && 'No coords found, wrong input'}{coords.length ? <span className='coord'>#{current + 1} 
+        <button className='copy-btn' onClick={() => clipboardy.write(coords[current].coord)}>Copy</button>
+      {current === coords.length - 1 ? '': '->' + (coords[current].distanceNext || 0).toFixed(2) + 'km'}</span>: null}
+    </span>
     <button className='next-btn' onClick={selectedMode === 'cb' ? pasteFromCb: next}>{selectedMode === 'cb' ? 'Paste From Clipboard' : 'Next'}</button>
   </div>
 }

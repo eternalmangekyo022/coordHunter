@@ -55,4 +55,15 @@
 		color: white;
 		text-decoration: none;
 	}
+
+	.copy-btn {
+		width: 2rem;
+		height: 1.6rem;
+		margin-top: 0;
+		padding-inline: 2rem;
+		display: inline-flex;
+		justify-content: center;
+		align-items: center;
+		cursor: pointer;
+	}
 }
