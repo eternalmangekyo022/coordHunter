@@ -9,7 +9,7 @@ type Coord = {
   distanceNext: number; // Null for the last coordinate, as there's no "next"
 };
 
-type ISelection = 'la' | 'taipei' | '' | 'cb' | 'last' | 'nycrocket';
+type ISelection = 'quest' | 'la' | 'taipei' | '' | 'cb' | 'last' | 'nycrocket';
 
 export default function App() {
   const [coordsInput, setCoordsInput] = useState('');
@@ -48,6 +48,7 @@ export default function App() {
     else if(e === 'cb') pasteFromCb()
     else if(e === 'last') loadLastSession()
     else if(e === 'nycrocket') loadRocket()
+    else if(e === 'quest') loadQuest()
     else loadCoords(e === 'la' ? laPreset.join(';') : taipeiPreset.join(';'))
   }
 
@@ -55,7 +56,12 @@ export default function App() {
     const raw = await axios.get<{ lat: number, lng: number }[]>('https://nyc-backend.vercel.app/rockets/12', { headers: { 'Content-Type': 'application/json' } });
     const filtered = raw.data.map(({ lat, lng }) => `${lat},${lng}`).join(';')
     loadCoords(filtered)
+  }
 
+  async function loadQuest() {
+    const raw = await axios.get<{ lat: number, lng: number }[]>('https://nyc-backend.vercel.app/quests/tyrunt', { headers: { 'Content-Type': 'application/json' } });
+    const filtered = raw.data.map(({ lat, lng }) => `${lat},${lng}`).join(';')
+    loadCoords(filtered)
   }
 
   function d(coord1: string, coord2: string): number {
@@ -167,6 +173,7 @@ export default function App() {
     <select onChange={e => selectionChanged(e.target.value as ISelection)} name="presets" >
       <option value="">{selectedMode !== '' ? 'Clear': 'Select A Preset'}</option>
       <option value="nycrocket">Rockets NYC</option>
+      <option value="quest">Quest</option>
       <option value="la">Los Angeles</option>
       <option value="taipei">Taipei</option>
       <option value="last">Load From Last Session</option>
