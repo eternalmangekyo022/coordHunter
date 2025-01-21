@@ -20,7 +20,7 @@ export default function App() {
   const [coords, setCoords] = useState<Coord[]>([]);
   const [current, setCurrent] = useState(0);
   const [selectedMode, setSelectedMode] = useState<ISelection>('');
-  const [_, setModalOpen] = useAtom(modalOpenAtom);
+  const [, setModalOpen] = useAtom(modalOpenAtom);
   const regex = /-?\d+\.\d+,-?\d+\.\d+/g;
   const availableQuests = useRef<{ [key:string]: number }>({});
 
