@@ -1,7 +1,10 @@
-import { useState } from 'react'
-import clipboardy from 'clipboardy'
+import { useState, useEffect, useRef } from 'react'
+import { useAtom } from 'jotai'
+import { modalOpenAtom } from './store/atoms'
 import laPreset from './presets/la.json'
 import taipeiPreset from './presets/taipei.json'
+import Modal from './components/Modal'
+import clipboardy from 'clipboardy'
 import axios from 'axios'
 
 type Coord = {
@@ -17,7 +20,9 @@ export default function App() {
   const [coords, setCoords] = useState<Coord[]>([]);
   const [current, setCurrent] = useState(0);
   const [selectedMode, setSelectedMode] = useState<ISelection>('');
+  const [_, setModalOpen] = useAtom(modalOpenAtom);
   const regex = /-?\d+\.\d+,-?\d+\.\d+/g;
+  const availableQuests = useRef<{ [key:string]: number }>({});
 
   const setCurrentMod = (curr: number) => {
     setCurrent(curr)
@@ -48,7 +53,10 @@ export default function App() {
     else if(e === 'cb') pasteFromCb()
     else if(e === 'last') loadLastSession()
     else if(e === 'nycrocket') loadRocket()
-    else if(e === 'quest') loadQuest()
+    else if(e === 'quest') {
+      setModalOpen(true)
+      // loadQuest()
+    }
     else loadCoords(e === 'la' ? laPreset.join(';') : taipeiPreset.join(';'))
   }
 
@@ -169,7 +177,16 @@ export default function App() {
     if(savedProgress) setCurrent(parseInt(savedProgress))
   }
 
+  useEffect(() => {
+    async function loadAvailableQuests() {
+      const res = await axios.get<{ [key:string]: number }>('https://nyc-backend.vercel.app/quests/')
+      availableQuests.current = res.data
+    }
+    loadAvailableQuests()
+  }, [])
+
   return <div className='main-wrapper'>
+    <Modal/>
     <input type="text" value={coordsInput} onChange={e => loadCoords(e.target.value)}/>
     <select onChange={e => selectionChanged(e.target.value as ISelection)} name="presets" >
       <option value="">{selectedMode !== '' ? 'Clear': 'Select A Preset'}</option>
