@@ -177,7 +177,7 @@ export default function App() {
     if(savedProgress) setCurrent(parseInt(savedProgress))
   }
 
-  function ButtonContextMenu(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+  function buttonContextMenu(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     e.preventDefault();
     if(coords.length) clipboardy.write(coords[0].coord);
   }
@@ -203,10 +203,10 @@ export default function App() {
       <option value="cb">Content From Clipboard</option>
     </select>
     <span className={`ready${ready ? ' active' : ''}`}>
-      {!ready && 'No coords found, wrong input'}{coords.length ? <span className='coord'>#{current + 1} 
+      {!ready && 'Check Input'}{coords.length ? <span className='coord'>#{current + 1} 
         <button className='copy-btn' onClick={() => clipboardy.write(coords[current].coord)}>Copy</button>
       {current === coords.length - 1 ? '': '->' + (coords[current].distanceNext || 0).toFixed(2) + 'km'}</span>: null}
     </span>
-    <button onContextMenu={e => ButtonContextMenu(e)} className='next-btn' onClick={selectedMode === 'cb' ? pasteFromCb: next}>{selectedMode === 'cb' ? 'Paste From Clipboard' : 'Next'}</button>
+    <button onContextMenu={e => buttonContextMenu(e)} className='next-btn' onClick={selectedMode === 'cb' ? pasteFromCb: next}>{selectedMode === 'cb' ? 'Paste From Clipboard' : 'Next'}</button>
   </div>
 }

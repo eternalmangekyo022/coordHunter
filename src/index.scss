@@ -1,6 +1,10 @@
+@use "variables" as *;
+
 * {
 	margin: 0;
 	padding: 0;
+	font-family: sans-serif;
+	font-weight: 500;
 }
 
 body {
@@ -11,7 +15,7 @@ body {
 	position: relative;
 	width: 100svw;
 	height: 100svh;
-	background: #9d9a9a;
+	background: $light3;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -21,12 +25,14 @@ body {
 	}
 
 	input {
-		height: 3rem;
-		width: min(80%, 19rem);
+		width: min(70%, 19rem);
+		height: 2rem;
+		border-radius: 1rem;
+		border: 1px solid $light2;
 	}
 
 	.ready {
-		color: red;
+		color: $warn;
 		&.active {
 			color: green;
 		}
@@ -41,6 +47,9 @@ body {
 
 	select {
 		margin-top: 1rem;
+		width: 10.5rem;
+		height: 2rem;
+		text-align: center;
 	}
 
 	.next-btn {
@@ -54,10 +63,11 @@ body {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		background: #222;
+		background: $light1;
 		border-radius: 2rem;
 		color: white;
 		text-decoration: none;
+		border: none;
 	}
 
 	.copy-btn {
