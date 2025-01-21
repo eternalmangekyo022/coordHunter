@@ -34,6 +34,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		overflow-y: scroll;
 	}
 }
 
@@ -48,9 +49,9 @@
 
 @keyframes modalOut {
 	0% {
-		background-color: rgba(0, 0, 0, 0.7);
+		opacity: 1;
 	}
 	100% {
-		background-color: rgba(0, 0, 0, 0);
+		opacity: 0;
 	}
 }

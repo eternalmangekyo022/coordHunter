@@ -177,6 +177,11 @@ export default function App() {
     if(savedProgress) setCurrent(parseInt(savedProgress))
   }
 
+  function ButtonContextMenu(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    e.preventDefault();
+    if(coords.length) clipboardy.write(coords[0].coord);
+  }
+
   useEffect(() => {
     async function loadAvailableQuests() {
       const res = await axios.get<{ [key:string]: number }>('https://nyc-backend.vercel.app/quests/')
@@ -202,6 +207,6 @@ export default function App() {
         <button className='copy-btn' onClick={() => clipboardy.write(coords[current].coord)}>Copy</button>
       {current === coords.length - 1 ? '': '->' + (coords[current].distanceNext || 0).toFixed(2) + 'km'}</span>: null}
     </span>
-    <button className='next-btn' onClick={selectedMode === 'cb' ? pasteFromCb: next}>{selectedMode === 'cb' ? 'Paste From Clipboard' : 'Next'}</button>
+    <button onContextMenu={e => ButtonContextMenu(e)} className='next-btn' onClick={selectedMode === 'cb' ? pasteFromCb: next}>{selectedMode === 'cb' ? 'Paste From Clipboard' : 'Next'}</button>
   </div>
 }
