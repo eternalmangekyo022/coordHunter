@@ -66,12 +66,12 @@ export default function App() {
     loadCoords(filtered)
   }
 
-  async function loadQuest() {
+  /**async function loadQuest() {
     const raw = await axios.get<{ quests: { lat: number, lng: number }[] }>('https://nyc-backend.vercel.app/quests/tyrunt', { headers: { 'Content-Type': 'application/json' } });
 
     const filtered = raw.data.quests.map(({ lat, lng }) => `${lat},${lng}`).join(';')
     loadCoords(filtered)
-  }
+  }*/
 
   function d(coord1: string, coord2: string): number {
     const R = 6371; // Earth's radius in kilometers
