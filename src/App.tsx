@@ -37,7 +37,7 @@ export default function App() {
     sortByTsp(matches as string[]);
   }
 
-  const selectionChanged = async (e: ISelection) => {
+  async function selectionChanged(e: ISelection) {
     setSelectedMode(e)
     if(e === '') {
       setCoordsInput('')
