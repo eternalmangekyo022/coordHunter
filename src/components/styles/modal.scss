@@ -40,6 +40,7 @@
 		& > div {
 			width: 100%;
 		}
+
 		.card-head {
 			height: 15%;
 			border-bottom: 1px solid #ccc;
@@ -55,6 +56,10 @@
 		.card-body {
 			height: 70%;
 			overflow-y: scroll;
+
+			:last-child {
+				border-bottom: none !important;
+			}
 
 			.operation-btn {
 				width: 100%;

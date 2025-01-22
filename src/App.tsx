@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useAtom } from 'jotai'
 import { modalOpenAtom } from './store/atoms'
 import laPreset from './presets/la.json'
@@ -24,7 +24,6 @@ export default function App() {
   const [, setModalOpen] = useAtom(modalOpenAtom);
   const [apis, setApis] = useState<ApiCityMap | undefined>(undefined);
   const regex = /-?\d+\.\d+,-?\d+\.\d+/g;
-  const availableQuests = useRef<{ [key:string]: number }>({});
 
   const setCurrentMod = (curr: number) => {
     setCurrent(curr)
@@ -183,10 +182,6 @@ export default function App() {
   }
 
   useEffect(() => {
-    async function loadAvailableQuests() {
-      const res = await axios.get<{ [key:string]: number }>(`https://nyc-backend.vercel.app/quests/`)
-      availableQuests.current = res.data
-    }
     async function loadCities() {
       const urls = await axios.get<ApiCityMap>(
         "https://nyc-backend.vercel.app/urls/"
@@ -194,7 +189,6 @@ export default function App() {
       setApis(urls.data);
     }
     loadCities()
-    loadAvailableQuests()
   }, [])
 
   useEffect(() => {

@@ -14,8 +14,8 @@ interface IQuest {
 	name?: string
 }
 
-interface IRockets {
-	id: string
+interface IRocket {
+	id?: string
 }
 
 export default function Modal({ loadOperation, apis }: Props) {
@@ -23,6 +23,7 @@ export default function Modal({ loadOperation, apis }: Props) {
 	const [selectedUrl, setSelectedUrl] = useState<ApiCity>('nyc');
 	const [selectedOperation, setSelectedOperation] = useState<Operations>('quests');
 	const [quests, setQuests] = useState<IQuest>({});
+	const [rockets, setRockets] = useState<IRocket>({});
 	const [selectedQuests, setSelectedQuests] = useState<number[]>([]);
 
 	const [out, setOut] = useState(false);
@@ -34,24 +35,23 @@ export default function Modal({ loadOperation, apis }: Props) {
 	}
 
 	useEffect(() => {
-		async function loadQuests() {
+		async function loadAssets() {
 			const questsUrl = 'https://nyc-backend.vercel.app/quests';
 			const { data: quests } = await axios.get<IQuest>(questsUrl)
 			setQuests(quests)
-		}
 
-		async function loadRockets() {
 			const rocketsUrl = 'https://nyc-backend.vercel.app/rockets';
+			const { data: rockets } = await axios.get<IRocket>(rocketsUrl);
+			setRockets(rockets)
 		}
-
-		loadQuests()
+		loadAssets()
 	}, [])
 
 	return <div className={`modal${modal ? ' active': ''}${out ? ' out': ''}`}>
 		<div className="card">
 			<div className="card-head">
 				<select name="selectedApi" id="selectedApi" onChange={e => setSelectedUrl(e.target.value as ApiCity)}>
-					{Object.entries(apis || {}).map(([v,k]) => <option key={k} value={v}>{k}</option>)}
+					{Object.entries(apis || {}).map(([k,{ name }]) => <option key={k} value={k}>{name}</option>)}
 				</select>
 				<select name="selectedOperation" id="selectedOperation" onChange={e => setSelectedOperation(e.target.value as Operations)}>
 					<option value="quests">Quest</option>

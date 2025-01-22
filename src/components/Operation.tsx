@@ -5,7 +5,7 @@ type PropTypes = { name: string, id: number, onClick: (active: boolean) => void 
 export default function Operation({ name, id, onClick }: PropTypes) {
 	const [active, setActive] = useState(false)
 
-	return <button className={`operation-btn${active ? ' active' : ''}`} key={id} onClick={() => {
+	return <button key={id.toString()} className={`operation-btn${active ? ' active' : ''}`} onClick={() => {
 		setActive(prev => {
 			onClick(!prev)
 			return !prev
