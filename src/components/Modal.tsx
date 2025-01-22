@@ -14,6 +14,10 @@ interface IQuest {
 	name?: string
 }
 
+interface IRockets {
+	id: string
+}
+
 export default function Modal({ loadOperation, apis }: Props) {
 	const [modal, setModal] = useAtom(modalOpenAtom)
 	const [selectedUrl, setSelectedUrl] = useState<ApiCity>('nyc');
@@ -36,6 +40,10 @@ export default function Modal({ loadOperation, apis }: Props) {
 			setQuests(quests)
 		}
 
+		async function loadRockets() {
+			const rocketsUrl = 'https://nyc-backend.vercel.app/rockets';
+		}
+
 		loadQuests()
 	}, [])
 
@@ -51,7 +59,9 @@ export default function Modal({ loadOperation, apis }: Props) {
 				</select>
 			</div>
 			<div className="card-body">
-				{selectedOperation === 'quests' && Object.entries(quests).map(([v,k]) => <Operation name={v} id={k} onClick={(active) => setSelectedQuests(prev => active ? [...prev, k] : prev.filter(id => id !== k))}	></Operation>)}
+				{selectedOperation === 'quests' ? 
+				Object.entries(quests).map(([v,k]) => <Operation name={v} id={k} onClick={(active) => setSelectedQuests(prev => active ? [...prev, k] : prev.filter(id => id !== k))}	/>): 
+				Object.entries(rockets).map(([v,k]) => <Operation name={v} id={k} onClick={(active) => setSelectedQuests(prev => active ? [...prev, k] : prev.filter(id => id !== k))}/>)}
 			</div>
 			<div className="card-footer">
 				<button id='close-btn' onClick={closeModal}>Close</button>

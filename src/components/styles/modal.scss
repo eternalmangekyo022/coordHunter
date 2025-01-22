@@ -60,9 +60,11 @@
 				width: 100%;
 				height: 4rem;
 				cursor: pointer;
+				border: none;
+				border-bottom: 1px solid rgb(155, 155, 155);
 
 				&.active {
-					background: #222;
+					background: #949494;
 				}
 			}
 		}
