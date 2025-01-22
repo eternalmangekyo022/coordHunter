@@ -43,7 +43,7 @@ export default function Modal({ loadOperation, apis }: Props) {
 		<div className="card">
 			<div className="card-head">
 				<select name="selectedApi" id="selectedApi" onChange={e => setSelectedUrl(e.target.value as ApiCity)}>
-					{Object.entries(apis || {}).map(([k,v]) => <option key={k} value={v}>{k}</option>)}
+					{Object.entries(apis || {}).map(([v,k]) => <option key={k} value={v}>{k}</option>)}
 				</select>
 				<select name="selectedOperation" id="selectedOperation" onChange={e => setSelectedOperation(e.target.value as Operations)}>
 					<option value="quests">Quest</option>
@@ -51,7 +51,7 @@ export default function Modal({ loadOperation, apis }: Props) {
 				</select>
 			</div>
 			<div className="card-body">
-				{Object.entries(quests).map(([v,k]) => <Operation name={v} id={k} onClick={(active) => setSelectedQuests(prev => active ? [...prev, k] : prev.filter(id => id !== k))}	></Operation>)}
+				{selectedOperation === 'quests' && Object.entries(quests).map(([v,k]) => <Operation name={v} id={k} onClick={(active) => setSelectedQuests(prev => active ? [...prev, k] : prev.filter(id => id !== k))}	></Operation>)}
 			</div>
 			<div className="card-footer">
 				<button id='close-btn' onClick={closeModal}>Close</button>

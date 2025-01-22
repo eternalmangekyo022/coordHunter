@@ -13,7 +13,7 @@ type Coord = {
   distanceNext: number; // Null for the last coordinate, as there's no "next"
 };
 
-type ISelection = 'quest' | 'la' | 'taipei' | '' | 'cb' | 'last' | 'nycrocket';
+type ISelection = 'operations' | 'la' | 'taipei' | '' | 'cb' | 'last';
 
 export default function App() {
   const [coordsInput, setCoordsInput] = useState('');
@@ -54,7 +54,7 @@ export default function App() {
     } 
     else if(e === 'cb') pasteFromCb()
     else if(e === 'last') loadLastSession()
-    else if(e === 'quest') {
+    else if(e === 'operations') {
       setModalOpen(true)
       // loadQuest()
     }
@@ -206,7 +206,7 @@ export default function App() {
     <input type="text" value={coordsInput} onChange={e => setCoordsInput(e.target.value)}/>
     <select id='presets' onChange={e => selectionChanged(e.target.value as ISelection)} name="presets" >
       <option value="">{selectedMode !== '' ? 'Clear': 'Select A Preset'}</option>
-      <option value="quest">Quest</option>
+      <option value="operations">Quest | Rocket</option>
       <option value="la">Los Angeles Unova</option>
       <option value="taipei">Taipei Unova</option>
       <option value="last">Load From Last Session</option>
