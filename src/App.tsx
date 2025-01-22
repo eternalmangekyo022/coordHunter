@@ -179,7 +179,7 @@ export default function App() {
   async function loadOperation(operation: Operations, city: ApiCity, payload: string): Promise<void> {
     const url = `https://nyc-backend.vercel.app/${operation}/${city}/${payload}`;
     const res = await axios.get<{ lat: number, lng: number }[]>(url);
-    loadCoords(res.data.map(({ lat, lng }) => `${lat},${lng}`).join(';'))
+    setCoordsInput(res.data.map(({ lat, lng }) => `${lat},${lng}`).join(';'))
   }
 
   useEffect(() => {
