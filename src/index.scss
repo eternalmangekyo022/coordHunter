@@ -20,7 +20,7 @@ body {
 	flex-direction: column;
 	align-items: center;
 
-	* {
+	> * {
 		margin-top: 3rem;
 	}
 
@@ -46,10 +46,13 @@ body {
 	}
 
 	select {
-		margin-top: 1rem;
 		width: 10.5rem;
 		height: 2rem;
 		text-align: center;
+
+		&.presets {
+			margin-top: 1rem;
+		}
 	}
 
 	.next-btn {

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef } from 'react'
 import { useAtom } from 'jotai'
 import { modalOpenAtom } from './store/atoms'
@@ -21,6 +22,7 @@ export default function App() {
   const [current, setCurrent] = useState(0);
   const [selectedMode, setSelectedMode] = useState<ISelection>('');
   const [, setModalOpen] = useAtom(modalOpenAtom);
+  const [apis, setApis] = useState<ApiCityMap | undefined>(undefined);
   const regex = /-?\d+\.\d+,-?\d+\.\d+/g;
   const availableQuests = useRef<{ [key:string]: number }>({});
 
@@ -52,18 +54,11 @@ export default function App() {
     } 
     else if(e === 'cb') pasteFromCb()
     else if(e === 'last') loadLastSession()
-    else if(e === 'nycrocket') loadRocket()
     else if(e === 'quest') {
       setModalOpen(true)
       // loadQuest()
     }
     else loadCoords(e === 'la' ? laPreset.join(';') : taipeiPreset.join(';'))
-  }
-
-  async function loadRocket() {
-    const raw = await axios.get<{ lat: number, lng: number }[]>('https://nyc-backend.vercel.app/rockets/12', { headers: { 'Content-Type': 'application/json' } });
-    const filtered = raw.data.map(({ lat, lng }) => `${lat},${lng}`).join(';')
-    loadCoords(filtered)
   }
 
   /**async function loadQuest() {
@@ -136,7 +131,6 @@ export default function App() {
         variations.push({ coords: final, distance: final.reduce((total, coord) => total + coord.distanceNext, 0) });
     }
     const shortest = variations.sort((a, b) => a.distance - b.distance)[0].coords
-    console.log(shortest);
   
     // Add the last coordinate with no "next" distance
     clipboardy.write(shortest[0].coord);
@@ -181,24 +175,40 @@ export default function App() {
     e.preventDefault();
     if(coords.length) clipboardy.write(coords[0].coord);
   }
+  
+  async function loadOperation(operation: Operations, city: ApiCity, payload: string): Promise<void> {
+    const url = `https://nyc-backend.vercel.app/${operation}/${city}/${payload}`;
+    const res = await axios.get<{ lat: number, lng: number }[]>(url);
+    loadCoords(res.data.map(({ lat, lng }) => `${lat},${lng}`).join(';'))
+  }
 
   useEffect(() => {
     async function loadAvailableQuests() {
-      const res = await axios.get<{ [key:string]: number }>('https://nyc-backend.vercel.app/quests/')
+      const res = await axios.get<{ [key:string]: number }>(`https://nyc-backend.vercel.app/quests/`)
       availableQuests.current = res.data
     }
+    async function loadCities() {
+      const urls = await axios.get<ApiCityMap>(
+        "https://nyc-backend.vercel.app/urls/"
+      );
+      setApis(urls.data);
+    }
+    loadCities()
     loadAvailableQuests()
   }, [])
 
+  useEffect(() => {
+    loadCoords(coordsInput)
+  }, [coordsInput])
+
   return <div className='main-wrapper'>
-    <Modal/>
-    <input type="text" value={coordsInput} onChange={e => loadCoords(e.target.value)}/>
-    <select onChange={e => selectionChanged(e.target.value as ISelection)} name="presets" >
+    <Modal loadOperation={loadOperation} apis={apis}/>
+    <input type="text" value={coordsInput} onChange={e => setCoordsInput(e.target.value)}/>
+    <select id='presets' onChange={e => selectionChanged(e.target.value as ISelection)} name="presets" >
       <option value="">{selectedMode !== '' ? 'Clear': 'Select A Preset'}</option>
-      <option value="nycrocket">Rockets NYC</option>
       <option value="quest">Quest</option>
-      <option value="la">Los Angeles</option>
-      <option value="taipei">Taipei</option>
+      <option value="la">Los Angeles Unova</option>
+      <option value="taipei">Taipei Unova</option>
       <option value="last">Load From Last Session</option>
       <option value="cb">Content From Clipboard</option>
     </select>
