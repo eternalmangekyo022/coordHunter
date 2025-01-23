@@ -40,7 +40,7 @@ export default function App() {
       setCoords([])
       return
     }
-    sortByTsp(matches as string[]);
+    sortByTsp(matches as string[], { inDepth: true });
   }
 
   const selectionChanged = async (e: ISelection) => {
@@ -88,53 +88,60 @@ export default function App() {
     return R * c; // Distance in kilometers
   }
   
-  async function sortByTsp(coords: string[]) {
+  async function sortByTsp(coords: string[], { inDepth }: { inDepth: boolean } = { inDepth: false }) {
     if (coords.length < 2) {
-      setCoords(coords.map(coord => ({ coord, distanceNext: coords.length === 1 ? 0 : d(coords[0], coords[1]) }))); // Single or empty input
+      setCoords(coords.map(coord => ({ coord, distanceNext: 0 }))); // Handle single or empty input
       return;
     }
-
-    type CoordList = {
-      coords: Coord[],
-      distance: number
-    }
-
-    const variations: CoordList[] = [];
-    for(let i = 0; i < coords.length; i++) {
-      console.log((i + 1) / coords.length * 100)
-      let remaining = [...coords];
-      const final: Coord[] = [];
-    
-      // Start with the first coordinate
-      let current = coords[i];
-      remaining = remaining.filter(coord => coord !== current);
-      while (remaining.length > 0) {
-        let closestIndex = 0;
-        let shortestDistance = Infinity;
-    
-        // Find the closest coordinate
-        for (let i = 0; i < remaining.length; i++) {
-          const distance = d(current, remaining[i]);
-          if (distance < shortestDistance) {
-            shortestDistance = distance;
-            closestIndex = i;
-          }
-        }
-    
-        // Add the current coordinate and its distance to the next one
-        final.push({ coord: current, distanceNext: shortestDistance });
-    
-        // Update the current coordinate and remove it from the remaining list
-        current = remaining.splice(closestIndex, 1)[0];}
-        final.push({ coord: current, distanceNext: 0 });
-        variations.push({ coords: final, distance: final.reduce((total, coord) => total + coord.distanceNext, 0) });
-    }
-    const shortest = variations.sort((a, b) => a.distance - b.distance)[0].coords
   
-    // Add the last coordinate with no "next" distance
-    clipboardy.write(shortest[0].coord);
-    setCoords(shortest);
+    // Find the shortest path starting from a given point
+    async function calcPath(start: string): Promise<Coord[]> {
+      const reorderedCoords = [start, ...coords.filter(c => c !== start)];
+      const path: Coord[] = [];
+      let current = reorderedCoords[0];
+  
+      let remaining = reorderedCoords.slice(1);
+      while (remaining.length > 0) {
+        const { closest, distance } = findClosest(current, remaining);
+        path.push({ coord: current, distanceNext: distance });
+        current = closest;
+        remaining = remaining.filter(c => c !== closest);
+      }
+  
+      path.push({ coord: current, distanceNext: 0 });
+      return path;
+    }
+  
+    // Find the closest coordinate to a given point
+    function findClosest(current: string, remaining: string[]): { closest: string; distance: number } {
+      return remaining.reduce(
+        (closest, coord) => {
+          const dist = d(current, coord);
+          return dist < closest.distance ? { closest: coord, distance: dist } : closest;
+        },
+        { closest: '', distance: Infinity }
+      );
+    }
+  
+    let finalPath: Coord[] = [];
+    if (!inDepth) {
+      finalPath = await calcPath(coords[0]);
+    } else {
+      let shortestDistance = Infinity;
+      for (const coord of coords) {
+        const path = await calcPath(coord);
+        const totalDistance = path.reduce((sum, c) => sum + c.distanceNext, 0);
+        if (totalDistance < shortestDistance) {
+          shortestDistance = totalDistance;
+          finalPath = path;
+        }
+      }
+    }
+  
+    clipboardy.write(finalPath[0].coord);
+    setCoords(finalPath);
   }
+  
 
   async function next() {
     if (coords.length === 0) {
