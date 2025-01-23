@@ -10,4 +10,8 @@ declare global {
   };
 
   type Operations = "quests" | "rockets";
+  type Coord = {
+    coord: string;
+    distanceNext: number; // Null for the last coordinate, as there's no "next"
+  };
 }
