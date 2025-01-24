@@ -28,7 +28,7 @@ export default function App() {
 
   async function loadCoords(val: string) {
     setCoordsInput(val)
-    localStorage.setItem('savedCoords', val)
+    if(val !== '') localStorage.setItem('savedCoords', val)
     const matches = val.match(regex);
     setReady(matches ? (!ready ? true: true) : false)
     setCurrentMod(0)
