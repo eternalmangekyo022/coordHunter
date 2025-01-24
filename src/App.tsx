@@ -57,15 +57,7 @@ export default function App() {
     }
     else loadCoords(e === 'la' ? laPreset.join(';') : taipeiPreset.join(';'))
   }
-
-  /**async function loadQuest() {
-    const raw = await axios.get<{ quests: { lat: number, lng: number }[] }>('https://nyc-backend.vercel.app/quests/tyrunt', { headers: { 'Content-Type': 'application/json' } });
-
-    const filtered = raw.data.quests.map(({ lat, lng }) => `${lat},${lng}`).join(';')
-    loadCoords(filtered)
-  }*/
-
-
+  
   async function next() {
     if (coords.length === 0) {
       console.warn("No coordinates available to navigate.");

@@ -10,5 +10,5 @@ export default function Operation({ name, id, onClick }: PropTypes) {
 			onClick(!prev)
 			return !prev
 		})
-	}}>{name}</button>
+	}}><img src={`https://projectpokemon.org/images/normal-sprite/${name}.gif`}/></button>
 }
