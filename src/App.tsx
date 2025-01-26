@@ -117,6 +117,14 @@ export default function App() {
     loadCoords(coordsInput)
   }, [coordsInput])
 
+  useEffect(() => {
+    try {
+      document.querySelector('.next-btn').webkitSetPresentationMode('picture-in-picture');
+    } catch {
+      console.log('Could not set presentation mode')
+    }
+  }, [])
+
   return <div className='main-wrapper'>
     <Modal loadOperation={loadOperation} apis={apis}/>
     <input type="text" value={coordsInput} onChange={e => setCoordsInput(e.target.value)}/>
